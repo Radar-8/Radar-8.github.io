@@ -4,6 +4,42 @@
 <script src='https://d3js.org/d3.v5.min.js'></script>
 <style> circle {fill: lightblue; stroke: black;}
 header, p {text-align:center;}
+
+.button {
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.button1 {
+    background-color: white;
+    color: black;
+    border: 2px solid #4CAF50;
+}
+
+.button1:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.button2 {
+    background-color: white;
+    color: black;
+    border: 2px solid #008CBA;
+}
+
+.button2:hover {
+    background-color: #008CBA;
+    color: white;
+}
+
 </style>
 <body onload='init()'>
 
@@ -11,6 +47,8 @@ header, p {text-align:center;}
 <h1>Data Title Here</h1>
 </header>
 
+<button type="button" class="button button1" id="Layout 1" onmousedown="Layout1(event)"> Layout 1
+</button>
 
 <svg width=300 height=300>
 </svg>
@@ -39,6 +77,11 @@ header, p {text-align:center;}
         d3.select('svg').append("g").attr("transform","translate(50,250)").call(d3.axisBottom(xs).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
 
     }
+
+    function Layout1(event){
+        alert("You Pressed Button: " + event.button)
+    }
+
 </script>
 </body>
 </html>
