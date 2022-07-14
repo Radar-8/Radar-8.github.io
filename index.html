@@ -40,6 +40,7 @@ header, p {text-align:center;}
     color: white;
 }
 
+
 </style>
 <body onload='init()'>
 
@@ -47,11 +48,12 @@ header, p {text-align:center;}
 <h1>Data Title Here</h1>
 </header>
 
-<div>
+<div style="margin:0 auto;width:50%;border:3px solid green;padding:10px;">
+
     <button type="button" class="button button1" id="Layout 1" onmousedown="Layout1(event)"> Layout 1
     </button>
 
-    <button type="button" class="button button1" id="Layout 2" onmousedown="Layout1(event)"> Layout 2
+    <button type="button" class="button button2" id="Layout 2" onmousedown="Layout1(event)"> Layout 2
     </button>
 
     <button type="button" class="button button1" id="Layout 3" onmousedown="Layout1(event)"> Layout 3
@@ -76,9 +78,9 @@ header, p {text-align:center;}
 
         d3.select("svg").append("g").attr("transform", "translate(50,50)").selectAll('circle').data(data).enter().append('circle')
 
-            .attr("cx", function(d,i) {return xs(d.AverageCityMPG);})
-            .attr("cy", function(d,i) {return ys(d.AverageHighwayMPG);})
-            .attr("r", function(d,i) {return 2+Number(d.EngineCylinders);})
+            .attr("cx", function(d) {return xs(d.AverageCityMPG);})
+            .attr("cy", function(d) {return ys(d.AverageHighwayMPG);})
+            .attr("r", function(d) {return 2+Number(d.EngineCylinders);})
 
         d3.select('svg').append("g").attr("transform","translate(50,50)").call(d3.axisLeft(ys).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
 
