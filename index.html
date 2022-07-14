@@ -6,38 +6,24 @@
 header, p {text-align:center;}
 
 .button {
-    border: none;
-    color: white;
-    padding: 16px 32px;
+    padding: 15px 25px;
+    font-size: 24px;
     text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    transition-duration: 0.4s;
     cursor: pointer;
+    outline: none;
+    color: #fff;
+    background-color: #04AA6D;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
 }
 
-.button1 {
-    background-color: white;
-    color: black;
-    border: 2px solid #4CAF50;
-}
+.button:hover {background-color: #3e8e41}
 
-.button1:hover {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.button2 {
-    background-color: white;
-    color: black;
-    border: 2px solid #008CBA;
-}
-
-.button2:hover {
-    background-color: #008CBA;
-    color: white;
+.button:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 
 
@@ -48,15 +34,15 @@ header, p {text-align:center;}
 <h1>Data Title Here</h1>
 </header>
 
-<div style="margin:0 auto; width:50%;>
+<div style="margin:0 auto;width:50%;">
 
-    <button type="button" class="button button1" id="Layout 1" onmousedown="Layout1(event)"> Layout 1
+    <button type="button" class="button" id="Layout 1" onmousedown="Layout1(event)"> Layout 1
     </button>
 
-    <button type="button" class="button button2" id="Layout 2" onmousedown="Layout1(event)"> Layout 2
+    <button type="button" class="button" id="Layout 2" onmousedown="Layout1(event)"> Layout 2
     </button>
 
-    <button type="button" class="button button1" id="Layout 3" onmousedown="Layout1(event)"> Layout 3
+    <button type="button" class="button" id="Layout 3" onmousedown="Layout1(event)"> Layout 3
     </button>
 </div>
 
