@@ -49,21 +49,19 @@ header, p {text-align:center;}
 <svg width=300 height=300>
 </svg>
 <script>
-    const data = await d3.csv("https://flunky.github.io/cars2017.csv");
-
-    xdomain = [10,150];
-    ydomain = [10,150];
-    xrange = [0,200];
-    yrange = [200,0];
-
-    xs = d3.scaleLog().domain(xdomain).range(xrange);
-    ys = d3.scaleLog().domain(ydomain).range(yrange);
-
     async function init() {
 
-    }
 
-    function Layout1(event){
+        const data = await d3.csv("https://flunky.github.io/cars2017.csv");
+
+        xdomain = [10,150];
+        ydomain = [10,150];
+        xrange = [0,200];
+        yrange = [200,0];
+
+        xs = d3.scaleLog().domain(xdomain).range(xrange);
+        ys = d3.scaleLog().domain(ydomain).range(yrange);
+
         d3.select("svg").append("g").attr("transform", "translate(50,50)").selectAll('circle').data(data).enter().append('circle')
 
             .attr("cx", function(d) {return xs(d.AverageCityMPG);})
@@ -75,6 +73,11 @@ header, p {text-align:center;}
 
         d3.select('svg').append("g").attr("transform","translate(50,250)").call(d3.axisBottom(xs).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
 
+
+    }
+
+    function Layout1(event){
+        alert("hello");
     }
 
     function Layout2(event){
