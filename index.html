@@ -50,16 +50,16 @@ header, p {text-align:center;}
 </svg>
 <script>
     const data = await d3.csv("https://flunky.github.io/cars2017.csv");
+
+    xdomain = [10,150];
+    ydomain = [10,150];
+    xrange = [0,200];
+    yrange = [200,0];
+
+    xs = d3.scaleLog().domain(xdomain).range(xrange);
+    ys = d3.scaleLog().domain(ydomain).range(yrange);
+
     async function init() {
-
-
-        xdomain = [10,150];
-        ydomain = [10,150];
-        xrange = [0,200];
-        yrange = [200,0];
-
-        xs = d3.scaleLog().domain(xdomain).range(xrange);
-        ys = d3.scaleLog().domain(ydomain).range(yrange);
 
     }
 
