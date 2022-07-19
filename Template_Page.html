@@ -60,22 +60,18 @@
 </svg></div>
 
 <script>
+    data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv")
+
+    const valuesByDay = d3.group(data, d=> d.TO_Date);
+
+</script>
+<script>
     async function init(){
-        const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv")
-
-        const valuesByDay = d3.group(data, d=> d.TO_Date);
-
-        d3.selectAll("p").html = valuesByDay;
     }
 
     async function Next(event){
-        const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv")
-
-        const valuesByDay = d3.group(data, d=> d.TO_Date);
-
-        alert(valuesByDay);
+        alert("Here")
     }
-
 </script>
 
 </body>
