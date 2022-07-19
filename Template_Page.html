@@ -37,16 +37,17 @@
 <body onload='init()'>
 
 <header>
-    <h1>Exploration of Miles Per Gallon and Car Type</h1>
+    <h1>Exploration of Operational Risk of USAF Primary Pilot Training Sorties</h1>
 </header>
 
 <p id="Body-Paragraph">
-    Lets use the below buttons to explore the story of Fuel Efficiency in Cars
+    Before every flight, pilots use a form to assign numerical values for risk factors.
+    This risk factors range from the mission being flown (ie: students first flight), weather (ie: low cloud layers),
+    and human factors (ie: lack of sleep and ops tempo)
 </p>
 
-<p id="Body-Paragraph2">
-    Lets use the below buttons to explore the story of Fuel Efficiency in Cars
-</p>
+<p id="Body-Paragraph2">The below chart is an aggregation of approximately 6 months of data from
+    November 2021 to July 2022</p>
 
 <div style="margin:0 auto;width:50%;">
 
@@ -60,7 +61,8 @@
 
 </div>
 <div><p> </p></div>
-<div><svg width=500 height=500>
+
+<div><svg>
 </svg></div>
 
 <script>
@@ -73,7 +75,7 @@
             OverallTotal: Number(d.Overall_Total),
         }));
 
-        var dayAverage = Object.values(data.reduce(function (r, o) {
+        dayAverage = Object.values(data.reduce(function (r, o) {
             var key = ['date'].map(k => o[k]);
             r[key] = r[key] || {date: o.date, count: 0, sum: 0};
             r[key].sum += o.OverallTotal;
@@ -85,21 +87,41 @@
         endDay = d3.max(dayAverage, d => d.date);
         highest_average = d3.max(dayAverage, d => d.average)
 
+        window.margins = {top: 10, right: 30, bottom: 30, left: 60};
+        window.width = 660 - margins.left - margins.right;
+        window.height = 400 - margins.top - margins.bottom;
+
         xdomain = [startDay, endDay];
         ydomain = [0, highest_average];
-        xrange = [0,400];
-        yrange = [400,0];
+        xrange = [0,width];
+        yrange = [height,0];
 
-        xs = d3.scaleTime().domain(xdomain).range(xrange);
-        ys = d3.scaleLinear().domain(ydomain).range(yrange);
+        window.xs = d3.scaleTime().domain(xdomain).range(xrange);
+        window.ys = d3.scaleLinear().domain(ydomain).range(yrange);
 
-        //.append("g").attr("transform", "translate(50,50)").
-        d3.select("svg").selectAll('circle').data(dayAverage).enter().append('circle')
+        //set svg width and height
+        d3.select('svg')
+            .attr("width", width + margins.left + margins.right)
+            .attr("height", height + margins.top + margins.bottom)
+
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("path").datum(dayAverage)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.average);})
+            )
+
+            /*.selectAll('circle').data(dayAverage).enter().append('circle')
 
             .attr("cx", function(d) {return xs(d.date);})
             .attr("cy", function(d) {return ys(d.average);})
             .attr("r", function(d) {return 2;})
-            .style("fill", function(d) {return "purple";});
+            .style("fill", function(d) {return "purple";})*/
+
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
 
         //d3.select('svg').append("g").attr("transform","translate(50,50)").call(d3.axisLeft(ys).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
 
@@ -117,6 +139,15 @@
 
     async function Next(event){
 
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("line")
+            .attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-width", 1.5)
+            .attr("x1", window.margins.left)
+            .attr("x2", window.width)
+            .attr("y1", window.ys(10))
+            .attr("y2", window.ys(10))
 
     }
 </script>
