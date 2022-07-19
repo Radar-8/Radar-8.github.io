@@ -1,83 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Visualization Project</title>
+</head>
 
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<style> circle { stroke: black;}
-header, p {text-align:center;}
 
-.button {
-    padding: 15px 25px;
-    font-size: 24px;
-    text-align: center;
-    cursor: pointer;
-    outline: none;
-    color: #fff;
-    background-color: #04AA6D;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 9px #999;
-}
+<style>
+    circle { stroke: black;}
 
-.button:hover {background-color: #3e8e41}
+    header, p, svg, div {text-align:center;}
 
-.button:active {
-    background-color: #3e8e41;
-    box-shadow: 0 5px #666;
-    transform: translateY(4px);
-}
+    .button {
+        padding: 15px 25px;
+        font-size: 24px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: #fff;
+        background-color: #04AA6D;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+    }
 
+    .button:hover {background-color: #3e8e41}
 
+    .button:active {
+        background-color: #3e8e41;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+    }
 </style>
+
 <body onload='init()'>
 
 <header>
-    <h1>Data Title Here</h1>
+    <h1>Exploration of Operational Risk of USAF Primary Pilot Training Sorties</h1>
 </header>
+
+<p id="Body-Paragraph">
+    Now lets look at the first category of risk, the Mission.
+</p>
+
+<p id="Body-Paragraph2"></p>
 
 <div style="margin:0 auto;width:50%;">
 
-    <button type="button" class="button" id="Layout 1" onclick="window.location.href='https://radar-8.github.io/index';"> Layout 1
-    </button>
+    <button type="button" class="button" id="View_1" onclick="window.location.href='https://radar-8.github.io/index';">1</button>
 
-    <button type="button" class="button" id="Layout 2" onclick="window.location.href='https://radar-8.github.io/Page_2';"> Layout 2
-    </button>
+    <button type="button" class="button" id="View_2" onclick="window.location.href='https://radar-8.github.io/Page_2';">2</button>
 
-    <button type="button" class="button" id="Layout 3" onclick="window.location.href='https://radar-8.github.io/Page_3';"> Layout 3
-    </button>
+    <button type="button" class="button" id="View_3" onclick="window.location.href='https://radar-8.github.io/Page_3';">3</button>
+
+    <button type="button" class="button" id="View_4" onclick="window.location.href='https://radar-8.github.io/Page_4';">4</button>
+
+    <button type="button" class="button" id="Next" onclick="Next(event)">Next</button>
+
 </div>
+<div><p> </p></div>
 
-<svg width=300 height=300>
-</svg>
+<div><svg>
+</svg></div>
+
 <script>
-    async function init() {
+    async function init(){
+        const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv", d =>({
+            date: new Date(d.TO_Date),
+            MissionTotal: Number(d.Mission_Total),
+            WeatherTotal: Number(d.Weather_Total),
+            HumanTotal: Number(d.Human_Factors_Total),
+            OverallTotal: Number(d.Overall_Total),
+        }));
+
+        dayAverage = Object.values(data.reduce(function (r, o) {
+            var key = ['date'].map(k => o[k]);
+            r[key] = r[key] || {date: o.date, count: 0, sum: 0};
+            r[key].sum += o.WeatherTotal;
+            r[key].count++;
+            return r;
+        }, {})).map(({date, count, sum}) => ({date, average: sum / count }));
+
+        startDay = d3.min(dayAverage, d => d.date);
+        endDay = d3.max(dayAverage, d => d.date);
+        highest_average = d3.max(dayAverage, d => d.average)
+
+        window.margins = {top: 10, right: 30, bottom: 30, left: 60};
+        window.width = 660 - margins.left - margins.right;
+        window.height = 400 - margins.top - margins.bottom;
+
+        xdomain = [startDay, endDay];
+        ydomain = [0, highest_average];
+        xrange = [0,width];
+        yrange = [height,0];
+
+        window.xs = d3.scaleTime().domain(xdomain).range(xrange);
+        window.ys = d3.scaleLinear().domain(ydomain).range(yrange);
+
+        //set svg width and height
+        d3.select('svg')
+            .attr("width", width + margins.left + margins.right)
+            .attr("height", height + margins.top + margins.bottom)
+
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("path").datum(dayAverage)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.average);})
+            )
+
+        /*.selectAll('circle').data(dayAverage).enter().append('circle')
+
+        .attr("cx", function(d) {return xs(d.date);})
+        .attr("cy", function(d) {return ys(d.average);})
+        .attr("r", function(d) {return 2;})
+        .style("fill", function(d) {return "purple";})*/
+
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
+
+        //d3.select('svg').append("g").attr("transform","translate(50,50)").call(d3.axisLeft(ys).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
+
+        //d3.select('svg').append("g").attr("transform","translate(50,250)").call(d3.axisBottom(xs).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
 
 
-        const data = await d3.csv("https://flunky.github.io/cars2017.csv");
+        /*
+        d3.select("svg").append("g").attr("transform", "translate(50,50)").selectAll('circle').data(temp).enter().append('circle')
 
-        xdomain = [10,150];
-        ydomain = [10,150];
-        xrange = [0,200];
-        yrange = [200,0];
-
-        xs = d3.scaleLog().domain(xdomain).range(xrange);
-        ys = d3.scaleLog().domain(ydomain).range(yrange);
-
-        d3.select("svg").append("g").attr("transform", "translate(50,50)").selectAll('circle').data(data).enter().append('circle')
-
-            .attr("cx", function(d) {return xs(d.AverageCityMPG);})
-            .attr("cy", function(d) {return ys(d.AverageHighwayMPG);})
-            .attr("r", function(d) {return 2+Number(d.EngineCylinders);})
-            .style("fill", function(d) {return "green";})
-
-        d3.select('svg').append("g").attr("transform","translate(50,50)").call(d3.axisLeft(ys).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
-
-        d3.select('svg').append("g").attr("transform","translate(50,250)").call(d3.axisBottom(xs).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
-
-
+            .attr("cx", function(d) {return d.TO_Date;})
+            .attr("cy", function(d) {return d.Overall_ORM;})
+            .attr("r", function(d) {return 2;})
+            .style("fill", function(d) {return "red";})*/
     }
 
+    async function Next(event){
+
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("line")
+            .attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-width", 1.5)
+            .attr("x1", window.margins.left)
+            .attr("x2", window.width)
+            .attr("y1", window.ys(10))
+            .attr("y2", window.ys(10))
+
+    }
 </script>
 
 </body>
 </html>
-

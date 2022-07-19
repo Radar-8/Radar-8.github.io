@@ -77,7 +77,7 @@
         dayAverage = Object.values(data.reduce(function (r, o) {
             var key = ['date'].map(k => o[k]);
             r[key] = r[key] || {date: o.date, count: 0, sum: 0};
-            r[key].sum += o.MissionTotal;
+            r[key].sum += o.HumanTotal;
             r[key].count++;
             return r;
         }, {})).map(({date, count, sum}) => ({date, average: sum / count }));
