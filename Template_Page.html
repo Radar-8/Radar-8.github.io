@@ -63,8 +63,11 @@
     async function init(){
     }
 
-    function Next(event){
-        document.getElementById("Body-Paragraph").innerText = "new"
+    async function Next(event){
+        const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv");
+
+
+        document.getElementById("Body-Paragraph").innerText = data
         alert("Here")
     }
 </script>
