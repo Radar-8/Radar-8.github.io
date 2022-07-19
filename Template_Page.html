@@ -68,8 +68,12 @@
         alert(valuesByDay);
     }
 
-    function Next(event){
-        alert("Next Page Here:");
+    async function Next(event){
+        const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv")
+
+        const valuesByDay = d3.group(data, d=> d.TO_Date);
+
+        alert(valuesByDay);
     }
 
 </script>
