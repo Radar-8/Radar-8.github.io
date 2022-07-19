@@ -44,6 +44,10 @@
     Lets use the below buttons to explore the story of Fuel Efficiency in Cars
 </p>
 
+<p id="Body-Paragraph2">
+    Lets use the below buttons to explore the story of Fuel Efficiency in Cars
+</p>
+
 <div style="margin:0 auto;width:50%;">
 
     <button type="button" class="button" id="View_1" onclick="Next(event)">1</button>
@@ -65,10 +69,20 @@
 
     async function Next(event){
         const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv");
+        temp = d3.flatRollup(data, v => d3.mean(v, d => d.Overall_ORM), d=> d.TO_Date);
+
+        d3.select("svg").append("g").attr("transform", "translate(50,50)").selectAll('circle').data(temp).enter().append('circle')
+
+            .attr("cx", function(d) {return d.TO_Date;})
+            .attr("cy", function(d) {return ys(d.Overall_ORM);})
+            .attr("r", function(d) {return 2;})
+            .style("fill", function(d) {return "red";})
+
+        d3.select('svg').append("g").attr("transform","translate(50,50)").call(d3.axisLeft(ys).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
+
+        d3.select('svg').append("g").attr("transform","translate(50,250)").call(d3.axisBottom(xs).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
 
 
-        document.getElementById("Body-Paragraph").innerText = data
-        alert("Here")
     }
 </script>
 
