@@ -65,7 +65,7 @@
 
         const valuesByDay = d3.group(data, d=> d.TO_Date);
 
-        alert(valuesByDay);
+        d3.selectAll("p").html = valuesByDay;
     }
 
     async function Next(event){
