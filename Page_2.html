@@ -136,19 +136,37 @@
             .style("fill", function(d) {return "red";})*/
     }
 
-    async function Next(event){
+    function Moderate_Line(event){
 
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("line")
+            .attr("fill", "none")
+            .attr("stroke", "orange")
+            .attr("stroke-width", 1.5)
+            .attr("x1", window.margins.left)
+            .attr("x2", window.width)
+            .attr("y1", window.ys(5))
+            .attr("y2", window.ys(5))
+    }
+
+    function High_Line(event) {
+
+        d3.select("svg").append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")")
             .append("line")
             .attr("fill", "none")
             .attr("stroke", "red")
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(10))
-            .attr("y2", window.ys(10))
-
+            .attr("y1", window.ys(8))
+            .attr("y2", window.ys(8))
     }
+
+    function Next(event) {
+        alert(document.URL)
+    }
+
+
 </script>
 
 </body>
