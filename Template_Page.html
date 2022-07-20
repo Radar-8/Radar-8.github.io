@@ -60,16 +60,23 @@
             OverallTotal: Number(d.Overall_Total),
         }));
 
-        dayAverage = Object.values(data.reduce(function (r, o) {
+        //process data and make into a usable format
+        window.dayAverage = Object.values(data.reduce(function (r, o) {
             var key = ['date'].map(k => o[k]);
             r[key] = r[key] || {
                 date: o.date,
                 count: 0,
-                sum: 0,
+                overallSum: 0,
+                missionSum: 0,
+                weatherSum: 0,
+                humanSum: 0,
                 high: 0,
                 low: 100};
 
-            r[key].sum += o.OverallTotal;
+            r[key].overallSum += o.OverallTotal;
+            r[key].missionSum += o.MissionTotal;
+            r[key].weatherSum += o.WeatherTotal;
+            r[key].humanSum += o.HumanTotal;
             r[key].count++;
             if (r[key].high < o.OverallTotal) {
                 r[key].high = o.OverallTotal
@@ -78,11 +85,15 @@
                 r[key].low = o.OverallTotal
             }
             return r;
-        }, {})).map(({date, count, sum}) => ({date, average: sum / count }));
+        }, {})).map(({date, count, overallSum, missionSum, weatherSum, humanSum}) =>
+            ({date, overallAve: overallSum / count,
+                missionAve: missionSum / count,
+                weatherAve: weatherSum / count,
+                humanAve: humanSum / count}));
 
         startDay = d3.min(dayAverage, d => d.date);
         endDay = d3.max(dayAverage, d => d.date);
-        highest_average = d3.max(dayAverage, d => d.average)
+        highest_average = d3.max(dayAverage, d => d.overallAve)
 
         window.HighLevel = 16;
         if (window.HighLevel + 2 > highest_average){
@@ -112,41 +123,67 @@
             .attr("stroke", "steelblue")
             .attr("stroke-width", 1.5)
             .attr("d", d3.line().x(function(d) {return xs(d.date);})
-                .y(function (d) {return ys(d.average);})
+                .y(function (d) {return ys(d.overallAve);})
             )
-            .on("mouseover", function(d,i){
+/*            .on("mouseover", function(d,i){
                 tooltip.style("opacity", 1)
                     .style("left",(d3.event.pageX)+"px")
                     .style("top", (d3.event.pageY)+"py")
                     .html("Item #"+i+" is "+d.average);
             })
-            .on("mouseout", function() {tooltip.style("opacity", 0)})
-
-        /*.selectAll('circle').data(dayAverage).enter().append('circle')
-
-        .attr("cx", function(d) {return xs(d.date);})
-        .attr("cy", function(d) {return ys(d.average);})
-        .attr("r", function(d) {return 2;})
-        .style("fill", function(d) {return "purple";})*/
+            .on("mouseout", function() {tooltip.style("opacity", 0)})*/
 
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
         d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
 
-        //d3.select('svg').append("g").attr("transform","translate(50,50)").call(d3.axisLeft(ys).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
+    }
 
-        //d3.select('svg').append("g").attr("transform","translate(50,250)").call(d3.axisBottom(xs).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
+    function overallLine(data, color){
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("path").datum(data)
+            .attr("fill", "none")
+            .attr("stroke", color)
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.overallAve);})
+            )
+    }
 
+    function missionLine(data, color){
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("path").datum(data)
+            .attr("fill", "none")
+            .attr("stroke", color)
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.missionAve);})
+            )
+    }
 
-        /*
-        d3.select("svg").append("g").attr("transform", "translate(50,50)").selectAll('circle').data(temp).enter().append('circle')
+    function weatherLine(data, color){
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("path").datum(data)
+            .attr("fill", "none")
+            .attr("stroke", color)
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.weatherAve);})
+            )
+    }
 
-            .attr("cx", function(d) {return d.TO_Date;})
-            .attr("cy", function(d) {return d.Overall_ORM;})
-            .attr("r", function(d) {return 2;})
-            .style("fill", function(d) {return "red";})*/
+    function humanLine(data, color){
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("path").datum(data)
+            .attr("fill", "none")
+            .attr("stroke", color)
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.humanAve);})
+            )
     }
 
     function Moderate_Line(event){
+        d3.select("svg").html = "";
 
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
             .append("line")
@@ -157,6 +194,11 @@
             .attr("x2", window.width)
             .attr("y1", window.ys(10))
             .attr("y2", window.ys(10))
+
+        missionLine(window.dayAverage, "gray")
+        weatherLine(window.dayAverage, "gray")
+        overallLine(window.dayAverage, "gray")
+        humanLine(window.dayAverage, "gray")
     }
 
     function High_Line(event) {
