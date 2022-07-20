@@ -91,6 +91,12 @@
             r[key] = r[key] || {date: o.date, count: 0, sum: 0};
             r[key].sum += o.OverallTotal;
             r[key].count++;
+            if (r[key].high < o.OverallTotal) {
+                r[key].high = o.OverallTotal
+            }
+            if (r[key].low > o.OverallTotal) {
+                r[key].low = o.OverallTotal
+            }
             return r;
         }, {})).map(({date, count, sum}) => ({date, average: sum / count }));
 

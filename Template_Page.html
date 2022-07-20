@@ -88,9 +88,15 @@
 
         dayAverage = Object.values(data.reduce(function (r, o) {
             var key = ['date'].map(k => o[k]);
-            r[key] = r[key] || {date: o.date, count: 0, sum: 0};
+            r[key] = r[key] || {date: o.date, count: 0, sum: 0, high: 0, low: 100};
             r[key].sum += o.OverallTotal;
             r[key].count++;
+            if (r[key].high < o.OverallTotal) {
+                r[key].high = o.OverallTotal
+            }
+            if (r[key].low > o.OverallTotal) {
+                r[key].low = o.OverallTotal
+            }
             return r;
         }, {})).map(({date, count, sum}) => ({date, average: sum / count }));
 
