@@ -77,8 +77,8 @@
 </div>
 
 <script>
-    async function init() {
-        const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv", d => ({
+    async function init(){
+        const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv", d =>({
             date: new Date(d.TO_Date),
             MissionTotal: Number(d.Mission_Total),
             WeatherTotal: Number(d.Weather_Total),
@@ -92,16 +92,17 @@
             r[key].sum += o.OverallTotal;
             r[key].count++;
             return r;
-        }, {})).map(({date, count, sum}) => ({date, average: sum / count}));
-
-        window.HighLevel = 16;
-        if (window.HighLevel + 2 > highest_average) {
-            highest_average = window.HighLevel + 2;
-        }
+        }, {})).map(({date, count, sum}) => ({date, average: sum / count }));
 
         startDay = d3.min(dayAverage, d => d.date);
         endDay = d3.max(dayAverage, d => d.date);
         highest_average = d3.max(dayAverage, d => d.average)
+
+        window.HighLevel = 16;
+        window.ModerateLevel = 10;
+        if (window.HighLevel + 2 > highest_average){
+            highest_average = window.HighLevel + 2;
+        }
 
         window.margins = {top: 10, right: 30, bottom: 30, left: 60};
         window.width = 660 - margins.left - margins.right;
@@ -109,8 +110,8 @@
 
         xdomain = [startDay, endDay];
         ydomain = [0, highest_average];
-        xrange = [0, width];
-        yrange = [height, 0];
+        xrange = [0,width];
+        yrange = [height,0];
 
         window.xs = d3.scaleTime().domain(xdomain).range(xrange);
         window.ys = d3.scaleLinear().domain(ydomain).range(yrange);
@@ -120,21 +121,37 @@
             .attr("width", width + margins.left + margins.right)
             .attr("height", height + margins.top + margins.bottom)
 
-        d3.select("svg").append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")")
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
             .append("path").datum(dayAverage)
             .attr("fill", "none")
             .attr("stroke", "steelblue")
             .attr("stroke-width", 1.5)
-            .attr("d", d3.line().x(function (d) {
-                    return xs(d.date);
-                })
-                    .y(function (d) {
-                        return ys(d.average);
-                    })
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.average);})
             )
 
-        d3.select("svg").append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")").call(d3.axisLeft(ys));
-        d3.select("svg").append("g").attr("transform", "translate(" + margins.left + ", " + height + ")").call(d3.axisBottom(xs));
+        /*.selectAll('circle').data(dayAverage).enter().append('circle')
+
+        .attr("cx", function(d) {return xs(d.date);})
+        .attr("cy", function(d) {return ys(d.average);})
+        .attr("r", function(d) {return 2;})
+        .style("fill", function(d) {return "purple";})*/
+
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
+
+        //d3.select('svg').append("g").attr("transform","translate(50,50)").call(d3.axisLeft(ys).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
+
+        //d3.select('svg').append("g").attr("transform","translate(50,250)").call(d3.axisBottom(xs).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
+
+
+        /*
+        d3.select("svg").append("g").attr("transform", "translate(50,50)").selectAll('circle').data(temp).enter().append('circle')
+
+            .attr("cx", function(d) {return d.TO_Date;})
+            .attr("cy", function(d) {return d.Overall_ORM;})
+            .attr("r", function(d) {return 2;})
+            .style("fill", function(d) {return "red";})*/
     }
 
     function Moderate_Line(event){
@@ -146,8 +163,8 @@
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(10))
-            .attr("y2", window.ys(10))
+            .attr("y1", window.ys(window.ModerateLevel))
+            .attr("y2", window.ys(window.ModerateLevel))
     }
 
     function High_Line(event) {
@@ -159,8 +176,8 @@
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(16))
-            .attr("y2", window.ys(16))
+            .attr("y1", window.ys(window.HighLevel))
+            .attr("y2", window.ys(window.HighLevel))
     }
 
     function Next(event) {
