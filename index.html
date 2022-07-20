@@ -68,6 +68,14 @@
 <div><svg>
 </svg></div>
 
+<div style="margin:0 auto;width:50%;">
+
+    <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event)">Moderate Line</button>
+
+    <button type="button" class="button" id="High" onclick="High_Line(event)">High Line</button>
+
+</div>
+
 <script>
     async function init() {
         const data = await d3.csv("https://radar-8.github.io/NOV2-JUL14.csv", d => ({
