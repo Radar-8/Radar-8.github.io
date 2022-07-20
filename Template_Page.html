@@ -3,36 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Data Visualization Project</title>
+    <link rel="stylesheet" href="project.css">
 </head>
 
 <script src='https://d3js.org/d3.v5.min.js'></script>
-
-<style>
-    circle { stroke: black;}
-
-    header, p, svg, div {text-align:center;}
-
-    .button {
-        padding: 15px 25px;
-        font-size: 24px;
-        text-align: center;
-        cursor: pointer;
-        outline: none;
-        color: #fff;
-        background-color: #04AA6D;
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 9px #999;
-    }
-
-    .button:hover {background-color: #3e8e41}
-
-    .button:active {
-        background-color: #3e8e41;
-        box-shadow: 0 5px #666;
-        transform: translateY(4px);
-    }
-</style>
 
 <body onload='init()'>
 
@@ -67,7 +41,7 @@
 
 <div><svg>
 </svg></div>
-
+<div name="tooltip" opacity="0"></div>
 <div style="margin:0 auto;width:50%;">
 
 <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event)">Moderate Line</button>
@@ -88,7 +62,13 @@
 
         dayAverage = Object.values(data.reduce(function (r, o) {
             var key = ['date'].map(k => o[k]);
-            r[key] = r[key] || {date: o.date, count: 0, sum: 0, high: 0, low: 100};
+            r[key] = r[key] || {
+                date: o.date,
+                count: 0,
+                sum: 0,
+                high: 0,
+                low: 100};
+
             r[key].sum += o.OverallTotal;
             r[key].count++;
             if (r[key].high < o.OverallTotal) {
@@ -134,6 +114,13 @@
             .attr("d", d3.line().x(function(d) {return xs(d.date);})
                 .y(function (d) {return ys(d.average);})
             )
+            .on("mouseover", function(d,i){
+                tooltip.style("opacity", 1)
+                    .style("left",(d3.event.pageX)+"px")
+                    .style("top", (d3.event.pageY)+"py")
+                    .html("Item #"+i+" is "+d.average);
+            })
+            .on("mouseout", function() {tooltip.style("opacity", 0)})
 
         /*.selectAll('circle').data(dayAverage).enter().append('circle')
 
