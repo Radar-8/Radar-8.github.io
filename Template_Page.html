@@ -13,25 +13,25 @@
     header, p, svg, div {text-align:center;}
 
     .button {
-    padding: 15px 25px;
-    font-size: 24px;
-    text-align: center;
-    cursor: pointer;
-    outline: none;
-    color: #fff;
-    background-color: #04AA6D;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 9px #999;
-}
+        padding: 15px 25px;
+        font-size: 24px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: #fff;
+        background-color: #04AA6D;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+    }
 
     .button:hover {background-color: #3e8e41}
 
     .button:active {
-    background-color: #3e8e41;
-    box-shadow: 0 5px #666;
-    transform: translateY(4px);
-}
+        background-color: #3e8e41;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+    }
 </style>
 
 <body onload='init()'>
@@ -51,19 +51,30 @@
 
 <div style="margin:0 auto;width:50%;">
 
-    <button type="button" class="button" id="View_1" onclick="Next(event)">1</button>
+    <button type="button" class="button" id="View_1" onclick="window.location.href='https://radar-8.github.io/index';">1</button>
 
-    <button type="button" class="button" id="View_2" onclick="Next(event)">2</button>
+    <button type="button" class="button" id="View_2" onclick="window.location.href='https://radar-8.github.io/Page_2';">2</button>
 
-    <button type="button" class="button" id="View_3" onclick="Next(event)">3</button>
+    <button type="button" class="button" id="View_3" onclick="window.location.href='https://radar-8.github.io/Page_3';">3</button>
+
+    <button type="button" class="button" id="View_4" onclick="window.location.href='https://radar-8.github.io/Page_4';">4</button>
 
     <button type="button" class="button" id="Next" onclick="Next(event)">Next</button>
 
 </div>
+
 <div><p> </p></div>
 
 <div><svg>
 </svg></div>
+
+<div style="margin:0 auto;width:50%;">
+
+<button type="button" class="button" id="Moderate" onclick="Moderate_Line(event)">Moderate Line</button>
+
+<button type="button" class="button" id="High" onclick="High_Line(event)">High Line</button>
+
+</div>
 
 <script>
     async function init(){
@@ -86,6 +97,11 @@
         startDay = d3.min(dayAverage, d => d.date);
         endDay = d3.max(dayAverage, d => d.date);
         highest_average = d3.max(dayAverage, d => d.average)
+
+        window.HighLevel = 16;
+        if (window.HighLevel + 2 > highest_average){
+            highest_average = window.HighLevel + 2;
+        }
 
         window.margins = {top: 10, right: 30, bottom: 30, left: 60};
         window.width = 660 - margins.left - margins.right;
@@ -113,12 +129,12 @@
                 .y(function (d) {return ys(d.average);})
             )
 
-            /*.selectAll('circle').data(dayAverage).enter().append('circle')
+        /*.selectAll('circle').data(dayAverage).enter().append('circle')
 
-            .attr("cx", function(d) {return xs(d.date);})
-            .attr("cy", function(d) {return ys(d.average);})
-            .attr("r", function(d) {return 2;})
-            .style("fill", function(d) {return "purple";})*/
+        .attr("cx", function(d) {return xs(d.date);})
+        .attr("cy", function(d) {return ys(d.average);})
+        .attr("r", function(d) {return 2;})
+        .style("fill", function(d) {return "purple";})*/
 
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
         d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
@@ -137,19 +153,36 @@
             .style("fill", function(d) {return "red";})*/
     }
 
-    async function Next(event){
+    function Moderate_Line(event){
 
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("line")
+            .attr("fill", "none")
+            .attr("stroke", "orange")
+            .attr("stroke-width", 1.5)
+            .attr("x1", window.margins.left)
+            .attr("x2", window.width)
+            .attr("y1", window.ys(10))
+            .attr("y2", window.ys(10))
+    }
+
+    function High_Line(event) {
+
+        d3.select("svg").append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")")
             .append("line")
             .attr("fill", "none")
             .attr("stroke", "red")
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(10))
-            .attr("y2", window.ys(10))
-
+            .attr("y1", window.ys(window.HighLevel))
+            .attr("y2", window.ys(window.HighLevel))
     }
+
+    function Next(event) {
+        alert(document.URL)
+    }
+
 </script>
 
 </body>

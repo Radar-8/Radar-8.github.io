@@ -82,6 +82,11 @@
             return r;
         }, {})).map(({date, count, sum}) => ({date, average: sum / count }));
 
+        window.HighLevel = 9;
+        if (window.HighLevel + 2 > highest_average){
+            highest_average = window.HighLevel + 2;
+        }
+
         startDay = d3.min(dayAverage, d => d.date);
         endDay = d3.max(dayAverage, d => d.date);
         highest_average = d3.max(dayAverage, d => d.average)
@@ -112,28 +117,9 @@
                 .y(function (d) {return ys(d.average);})
             )
 
-        /*.selectAll('circle').data(dayAverage).enter().append('circle')
-
-        .attr("cx", function(d) {return xs(d.date);})
-        .attr("cy", function(d) {return ys(d.average);})
-        .attr("r", function(d) {return 2;})
-        .style("fill", function(d) {return "purple";})*/
-
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
         d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
 
-        //d3.select('svg').append("g").attr("transform","translate(50,50)").call(d3.axisLeft(ys).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
-
-        //d3.select('svg').append("g").attr("transform","translate(50,250)").call(d3.axisBottom(xs).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
-
-
-        /*
-        d3.select("svg").append("g").attr("transform", "translate(50,50)").selectAll('circle').data(temp).enter().append('circle')
-
-            .attr("cx", function(d) {return d.TO_Date;})
-            .attr("cy", function(d) {return d.Overall_ORM;})
-            .attr("r", function(d) {return 2;})
-            .style("fill", function(d) {return "red";})*/
     }
 
     function Moderate_Line(event){
@@ -158,8 +144,8 @@
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(9))
-            .attr("y2", window.ys(9))
+            .attr("y1", window.ys(window.HighLevel))
+            .attr("y2", window.ys(window.HighLevel))
     }
 
     function Next(event) {
