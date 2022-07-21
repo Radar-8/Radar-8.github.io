@@ -46,9 +46,9 @@
 <div name="tooltip" opacity="0"></div>
 <div style="margin:0 auto;width:50%;">
 
-<button type="button" class="button" id="Moderate" onclick="Moderate_Line(event)">Moderate Line</button>
+<button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, 10)">Moderate Line</button>
 
-<button type="button" class="button" id="High" onclick="High_Line(event)">High Line</button>
+<button type="button" class="button" id="High" onclick="High_Line(event, 16)">High Line</button>
 
 </div>
 
@@ -119,24 +119,13 @@
             .attr("width", width + margins.left + margins.right)
             .attr("height", height + margins.top + margins.bottom)
 
-        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
-            .append("path").datum(dayAverage)
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 1.5)
-            .attr("d", d3.line().x(function(d) {return xs(d.date);})
-                .y(function (d) {return ys(d.overallAve);})
-            )
-/*            .on("mouseover", function(d,i){
-                tooltip.style("opacity", 1)
-                    .style("left",(d3.event.pageX)+"px")
-                    .style("top", (d3.event.pageY)+"py")
-                    .html("Item #"+i+" is "+d.average);
-            })
-            .on("mouseout", function() {tooltip.style("opacity", 0)})*/
-
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
         d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
+
+        overallLine(window.dayAverage, "SteelBlue");
+        missionLine(window.dayAverage, "SteelBlue");
+        weatherLine(window.dayAverage, "SteelBlue");
+        humanLine(window.dayAverage, "SteelBlue");
 
     }
 
@@ -184,7 +173,7 @@
             )
     }
 
-    function Moderate_Line(event){
+    function Moderate_Line(event, level){
         d3.select("svg").html = "";
 
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
@@ -194,8 +183,8 @@
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(10))
-            .attr("y2", window.ys(10))
+            .attr("y1", window.ys(level))
+            .attr("y2", window.ys(level))
 
         missionLine(window.dayAverage, "gray")
         weatherLine(window.dayAverage, "gray")
@@ -203,7 +192,7 @@
         humanLine(window.dayAverage, "gray")
     }
 
-    function High_Line(event) {
+    function High_Line(event, level) {
 
         d3.select("svg").append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")")
             .append("line")
@@ -212,8 +201,8 @@
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(window.HighLevel))
-            .attr("y2", window.ys(window.HighLevel))
+            .attr("y1", window.ys(level))
+            .attr("y2", window.ys(level))
     }
 
 
