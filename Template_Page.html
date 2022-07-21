@@ -25,6 +25,8 @@
 
 <div style="margin:0 auto;width:50%;">
 
+    <button type="button" class="button" id="Back" onclick="window.location.href='https://radar-8.github.io/Page_3';">Back</button>
+
     <button type="button" class="button" id="View_1" onclick="window.location.href='https://radar-8.github.io/index';">1</button>
 
     <button type="button" class="button" id="View_2" onclick="window.location.href='https://radar-8.github.io/Page_2';">2</button>
@@ -33,20 +35,20 @@
 
     <button type="button" class="button" id="View_4" onclick="window.location.href='https://radar-8.github.io/Page_4';">4</button>
 
-    <button type="button" class="button" id="Next" onclick="Next(event)">Next</button>
+    <button type="button" class="buttonPage" id="View_5" onclick="window.location.href='https://radar-8.github.io/Page_5';">5</button>
 
 </div>
 
 <div><p> </p></div>
 
 <div><svg>
-</svg></div>
+</svg><p id="averageValues">Mouse over to see the average on a Day.</p></div>
 <div name="tooltip" opacity="0"></div>
 <div style="margin:0 auto;width:50%;">
 
-<button type="button" class="button" id="Moderate" onclick="Moderate_Line(event)">Moderate Line</button>
+    <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, 10)">Moderate Line</button>
 
-<button type="button" class="button" id="High" onclick="High_Line(event)">High Line</button>
+    <button type="button" class="button" id="High" onclick="High_Line(event, 16)">High Line</button>
 
 </div>
 
@@ -117,31 +119,65 @@
             .attr("width", width + margins.left + margins.right)
             .attr("height", height + margins.top + margins.bottom)
 
-        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
-            .append("path").datum(dayAverage)
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 1.5)
-            .attr("d", d3.line().x(function(d) {return xs(d.date);})
-                .y(function (d) {return ys(d.overallAve);})
-            )
-/*            .on("mouseover", function(d,i){
-                tooltip.style("opacity", 1)
-                    .style("left",(d3.event.pageX)+"px")
-                    .style("top", (d3.event.pageY)+"py")
-                    .html("Item #"+i+" is "+d.average);
-            })
-            .on("mouseout", function() {tooltip.style("opacity", 0)})*/
-
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
         d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
 
+        overallLine(window.dayAverage, "black");
+        //missionLine(window.dayAverage, "green");
+        //weatherLine(window.dayAverage, "yellow");
+        //humanLine(window.dayAverage, "red");
+
+        var mouseG = d3.select('svg')
+            .append("g")
+            .attr("transform", "translate("+margins.left+", " + margins.top + ")")
+            .attr("class", "mouse-over-effects")
+
+        mouseG.append('path')
+            .attr("class", "mouse-line")
+            .style("stroke", "black")
+            .style("stroke-width", "1px")
+            .style("opacity", "0");
+
+        mouseG.append('svg:rect')
+            .attr('width', window.width)
+            .attr('height', window.height)
+            .attr('fill', 'none')
+            .attr('pointer-events', 'all')
+            .on('mouseout', function() {
+                d3.select(".mouse-line")
+                    .style("opacity", "0");
+            })
+            .on('mouseover', function() {
+                d3.select(".mouse-line")
+                    .style("opacity", "1");
+            })
+            .on('mousemove', function() {
+                var mouse = d3.mouse(this);
+                d3.select(".mouse-line")
+                    .attr("d", function () {
+                        var d = "M" + mouse[0] + "," + window.height;
+                        d += " " + mouse[0] + "," + 0;
+                        return d;
+                    });
+
+            });
+    }
+
+    function displayAverages(data, type){
+        //helper function
+        function roundNumber(num, dec) {
+            return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
+        }
+        d3.select("#averageValues").data(window.dayAverage).html(
+            function(d) {
+                return d.overallAve;})
     }
 
     function overallLine(data, color){
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
             .append("path").datum(data)
             .attr("fill", "none")
+            .attr("class", "line")
             .attr("stroke", color)
             .attr("stroke-width", 1.5)
             .attr("d", d3.line().x(function(d) {return xs(d.date);})
@@ -165,6 +201,7 @@
             .append("path").datum(data)
             .attr("fill", "none")
             .attr("stroke", color)
+            .attr("class", "line")
             .attr("stroke-width", 1.5)
             .attr("d", d3.line().x(function(d) {return xs(d.date);})
                 .y(function (d) {return ys(d.weatherAve);})
@@ -175,6 +212,7 @@
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
             .append("path").datum(data)
             .attr("fill", "none")
+            .attr("class", "line")
             .attr("stroke", color)
             .attr("stroke-width", 1.5)
             .attr("d", d3.line().x(function(d) {return xs(d.date);})
@@ -182,7 +220,7 @@
             )
     }
 
-    function Moderate_Line(event){
+    function Moderate_Line(event, level){
         d3.select("svg").html = "";
 
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
@@ -192,8 +230,8 @@
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(10))
-            .attr("y2", window.ys(10))
+            .attr("y1", window.ys(level))
+            .attr("y2", window.ys(level))
 
         missionLine(window.dayAverage, "gray")
         weatherLine(window.dayAverage, "gray")
@@ -201,7 +239,7 @@
         humanLine(window.dayAverage, "gray")
     }
 
-    function High_Line(event) {
+    function High_Line(event, level) {
 
         d3.select("svg").append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")")
             .append("line")
@@ -210,13 +248,10 @@
             .attr("stroke-width", 1.5)
             .attr("x1", window.margins.left)
             .attr("x2", window.width)
-            .attr("y1", window.ys(window.HighLevel))
-            .attr("y2", window.ys(window.HighLevel))
+            .attr("y1", window.ys(level))
+            .attr("y2", window.ys(level))
     }
 
-    function Next(event) {
-        alert(document.URL)
-    }
 
 </script>
 

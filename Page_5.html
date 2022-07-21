@@ -122,11 +122,10 @@
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
         d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
 
-        overallLine(window.dayAverage, "SteelBlue");
-        missionLine(window.dayAverage, "SteelBlue");
-        weatherLine(window.dayAverage, "SteelBlue");
-        humanLine(window.dayAverage, "SteelBlue");
-
+        overallLine(window.dayAverage, "black");
+        missionLine(window.dayAverage, "green");
+        weatherLine(window.dayAverage, "yellow");
+        humanLine(window.dayAverage, "red");
     }
 
     function overallLine(data, color){
