@@ -113,14 +113,15 @@
 
         window.xs = d3.scaleTime().domain(xdomain).range(xrange);
         window.ys = d3.scaleLinear().domain(ydomain).range(yrange);
-
+        window.colors = d3.scaleOrdinal().domain(["overall", "mission", "weather", "human"]).range(["black", "lightblue", "yellow", "orange"])
+        //window.colorstest = d3.scaleThreshold().domain([0,5,10]).range(["#ccc", 'green', 'orange', 'red']);
         //set svg width and height
         d3.select('svg')
             .attr("width", width + margins.left + margins.right)
             .attr("height", height + margins.top + margins.bottom)
 
         d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")").call(d3.axisLeft(ys));
-        d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + height + ")").call(d3.axisBottom(xs));
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + (height + margins.top) + ")").call(d3.axisBottom(xs));
 
         overallLine(window.dayAverage, "black");
         //missionLine(window.dayAverage, "green");
@@ -135,6 +136,21 @@
         mouseG.append('path')
             .attr("class", "mouse-line")
             .style("stroke", "black")
+            .style("stroke-width", "1px")
+            .style("opacity", "0");
+
+        var mousePerLine = mouseG.selectAll('.mouse-per-line')
+            .data(window.dayAverage)
+            .enter()
+            .append("g")
+            .attr("class", "mouse-per-line");
+
+        mousePerLine.append("circle")
+            .attr("r", 7)
+            .style("stroke", function(d) {
+                return "black";
+            })
+            .style("fill", "none")
             .style("stroke-width", "1px")
             .style("opacity", "0");
 
@@ -159,7 +175,12 @@
                         d += " " + mouse[0] + "," + 0;
                         return d;
                     });
-
+                xDate = new Date(xs.invert(mouse[0]))
+                window.dayAverage.forEach( v => {
+                    if (v.date.getTime() === xDate.getTime()){
+                        displayAverages(v, "temp");
+                    }
+                });
             });
     }
 
@@ -168,9 +189,12 @@
         function roundNumber(num, dec) {
             return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
         }
-        d3.select("#averageValues").data(window.dayAverage).html(
-            function(d) {
-                return d.overallAve;})
+        d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
+        d3.select("#averageValues").html(
+            'Overall Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
+            'Mission Average: ' + roundNumber(data.missionAve, 3) + '<br>' +
+            'Weather Average: ' + roundNumber(data.weatherAve, 3) + '<br>' +
+            'Human Factors Average: ' + roundNumber(data.humanAve, 3));
     }
 
     function overallLine(data, color){
