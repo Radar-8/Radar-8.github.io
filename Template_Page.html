@@ -43,13 +43,13 @@
 
 <div><svg>
 </svg><p id="averageValues">Mouse over to see the average on a Day.</p></div>
-<div name="tooltip" opacity="0"></div>
 <div style="margin:0 auto;width:50%;">
 
     <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, 10)">Moderate Line</button>
 
     <button type="button" class="button" id="High" onclick="High_Line(event, 16)">High Line</button>
 
+    <button type="button" class="button" id="dayLines" onclick="plotHighLow(window.dayAverage, 'lightgray')">Day Highs/Lows</button>
 </div>
 
 <script>
@@ -87,19 +87,21 @@
                 r[key].low = o.OverallTotal
             }
             return r;
-        }, {})).map(({date, count, overallSum, missionSum, weatherSum, humanSum}) =>
+        }, {})).map(({date, count, overallSum, missionSum, weatherSum, humanSum, high, low}) =>
             ({date, overallAve: overallSum / count,
                 missionAve: missionSum / count,
                 weatherAve: weatherSum / count,
-                humanAve: humanSum / count}));
+                humanAve: humanSum / count,
+                high: high,
+                low: low}));
 
         startDay = d3.min(dayAverage, d => d.date);
         endDay = d3.max(dayAverage, d => d.date);
-        highest_average = d3.max(dayAverage, d => d.overallAve)
+        highest = d3.max(dayAverage, d => d.high)
 
         window.HighLevel = 16;
-        if (window.HighLevel + 2 > highest_average){
-            highest_average = window.HighLevel + 2;
+        if (window.HighLevel + 2 > highest){
+            highest = window.HighLevel + 2;
         }
 
         window.margins = {top: 10, right: 30, bottom: 30, left: 60};
@@ -107,7 +109,7 @@
         window.height = 400 - margins.top - margins.bottom;
 
         xdomain = [startDay, endDay];
-        ydomain = [0, highest_average];
+        ydomain = [0, highest];
         xrange = [0,width];
         yrange = [height,0];
 
@@ -124,10 +126,18 @@
         d3.select("svg").append("g").attr("transform", "translate("+margins.left+", " + (height + margins.top) + ")").call(d3.axisBottom(xs));
 
         overallLine(window.dayAverage, "black");
+        //plotHighLow(window.dayAverage, "lightgray");
         //missionLine(window.dayAverage, "green");
         //weatherLine(window.dayAverage, "yellow");
         //humanLine(window.dayAverage, "red");
 
+
+        createToolTip("black", "black")
+    }
+
+    function createToolTip(c_color, text_color){
+        //Tool Tip (make a line and circle on each line
+        //document.getElementsByClassName("mouse-over-effects").html() = "";
         var mouseG = d3.select('svg')
             .append("g")
             .attr("transform", "translate("+margins.left+", " + margins.top + ")")
@@ -139,20 +149,22 @@
             .style("stroke-width", "1px")
             .style("opacity", "0");
 
+        var lines = document.getElementsByClassName('line');
+
         var mousePerLine = mouseG.selectAll('.mouse-per-line')
-            .data(window.dayAverage)
-            .enter()
-            .append("g")
+            .data(lines).enter().append("g")
             .attr("class", "mouse-per-line");
 
         mousePerLine.append("circle")
-            .attr("r", 7)
-            .style("stroke", function(d) {
-                return "black";
-            })
+            .attr("r", 3)
+            .style("stroke", c_color)
             .style("fill", "none")
             .style("stroke-width", "1px")
             .style("opacity", "0");
+
+        mousePerLine.append("text")
+            .attr("transform", "translate(10,3)")
+            .style("fill", text_color);
 
         mouseG.append('svg:rect')
             .attr('width', window.width)
@@ -162,9 +174,17 @@
             .on('mouseout', function() {
                 d3.select(".mouse-line")
                     .style("opacity", "0");
+                d3.selectAll(".mouse-per-line circle")
+                    .style("opacity", "0");
+                d3.selectAll(".mouse-per-line text")
+                    .style("opacity", "0");
             })
             .on('mouseover', function() {
                 d3.select(".mouse-line")
+                    .style("opacity", "1");
+                d3.selectAll(".mouse-per-line circle")
+                    .style("opacity", "1");
+                d3.selectAll(".mouse-per-line text")
                     .style("opacity", "1");
             })
             .on('mousemove', function() {
@@ -177,24 +197,61 @@
                     });
                 xDate = new Date(xs.invert(mouse[0]))
                 window.dayAverage.forEach( v => {
-                    if (v.date.getTime() === xDate.getTime()){
-                        displayAverages(v, "temp");
+                    if (
+                        v.date.getFullYear() === xDate.getFullYear() &&
+                        v.date.getMonth() === xDate.getMonth() &&
+                        v.date.getDate() === xDate.getDate()
+                    ) {
+                        displayAverages(v)
+                        //updateToolTip(v, lines)
                     }
                 });
+
+                d3.selectAll(".mouse-per-line")
+                    .attr('transform', function(d, i){
+                        var xDate = new Date(xs.invert(mouse[0]));
+                        window.dayAverage.forEach( v => {
+                            if (
+                                v.date.getFullYear() === xDate.getFullYear() &&
+                                v.date.getMonth() === xDate.getMonth() &&
+                                v.date.getDate() === xDate.getDate()
+                            ) {
+                                var beginning = 0,
+                                    end = lines[i].getTotalLength(),
+                                    target = null;
+
+                                while (true){
+                                    target = Math.floor((beginning + end) / 2);
+                                    window.pos = lines[i].getPointAtLength(target);
+                                    if ((target === end || target === beginning) && pos.x !== mouse[0]) {
+                                        break;
+                                    }
+                                    if (pos.x > mouse[0]) {
+                                        end = target;}
+                                    else if (pos.x < mouse[0]) {
+                                        beginning = target;}
+                                    else break; //position found
+                                }
+                            }
+                        })
+                        d3.select(this).select('text').text(ys.invert(window.pos.y).toFixed(d));
+                        return "translate(" + window.pos.x + "," + window.pos.y +")";
+                    })
             });
     }
 
-    function displayAverages(data, type){
-        //helper function
+    function displayAverages(data){
+        //helper function to give more data to user
         function roundNumber(num, dec) {
             return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
-        d3.select("#averageValues").html(
-            'Overall Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
+        d3.select("#averageValues").html(function(){
+            return 'Overall_Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
             'Mission Average: ' + roundNumber(data.missionAve, 3) + '<br>' +
             'Weather Average: ' + roundNumber(data.weatherAve, 3) + '<br>' +
-            'Human Factors Average: ' + roundNumber(data.humanAve, 3));
+            'Human Factors Average: ' + roundNumber(data.humanAve, 3);
+        })
     }
 
     function overallLine(data, color){
@@ -207,6 +264,45 @@
             .attr("d", d3.line().x(function(d) {return xs(d.date);})
                 .y(function (d) {return ys(d.overallAve);})
             )
+    }
+
+    function plotHighLow(data, color){
+        //Line Version
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("path").datum(data)
+            .attr("fill", "none")
+            .attr("class", "line")
+            .attr("stroke", color)
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.high);})
+            )
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .append("path").datum(data)
+            .attr("fill", "none")
+            .attr("class", "line")
+            .attr("stroke", color)
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line().x(function(d) {return xs(d.date);})
+                .y(function (d) {return ys(d.low);})
+            )
+        createToolTip("black", "black");
+
+        //Circle version
+        /*d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+
+        .selectAll("circle").data(data).enter().append("circle")
+            .style("fill", "lightgray")
+            .attr("cx", function(d) { return window.xs(d.date)})
+            .attr("cy", function(d) { return window.ys(d.high)})
+            .attr("r", 1)
+
+        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+            .selectAll("circle").data(data).enter().append("circle")
+            .style("fill", "red")
+            .attr("cx", function(d) { return window.xs(d.date)})
+            .attr("cy", function(d) { return window.ys(d.low)})
+            .attr("r", 1)*/
     }
 
     function missionLine(data, color){
