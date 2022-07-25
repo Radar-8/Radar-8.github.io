@@ -45,12 +45,22 @@
 </svg><p id="averageValues">Mouse over to see the average on a Day.</p></div>
 <div style="margin:0 auto;width:50%;">
 
-    <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, 10)">Moderate Line</button>
+    <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, window.moderateLevel)">Moderate Line</button>
 
-    <button type="button" class="button" id="High" onclick="High_Line(event, 16)">High Line</button>
+    <button type="button" class="button" id="High" onclick="High_Line(event, window.HighLevel)">High Line</button>
 
     <button type="button" class="button" id="dayLines" onclick="plotHighLow(window.dayAverage, 'lightgray')">Day Highs/Lows</button>
 </div>
+
+<script>
+    //universal Variables
+    window.HighLevel = 16;
+    window.ModerateLevel = 10;
+
+    window.margins = {top: 10, right: 30, bottom: 30, left: 60};
+    window.width = 660 - margins.left - margins.right;
+    window.height = 400 - margins.top - margins.bottom;
+</script>
 
 <script>
     async function init(){
@@ -99,14 +109,10 @@
         endDay = d3.max(dayAverage, d => d.date);
         highest = d3.max(dayAverage, d => d.high)
 
-        window.HighLevel = 16;
+
         if (window.HighLevel + 2 > highest){
             highest = window.HighLevel + 2;
         }
-
-        window.margins = {top: 10, right: 30, bottom: 30, left: 60};
-        window.width = 660 - margins.left - margins.right;
-        window.height = 400 - margins.top - margins.bottom;
 
         xdomain = [startDay, endDay];
         ydomain = [0, highest];
@@ -248,9 +254,9 @@
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
             return 'Overall_Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
-            'Mission Average: ' + roundNumber(data.missionAve, 3) + '<br>' +
-            'Weather Average: ' + roundNumber(data.weatherAve, 3) + '<br>' +
-            'Human Factors Average: ' + roundNumber(data.humanAve, 3);
+                'Mission Average: ' + roundNumber(data.missionAve, 3) + '<br>' +
+                'Weather Average: ' + roundNumber(data.weatherAve, 3) + '<br>' +
+                'Human Factors Average: ' + roundNumber(data.humanAve, 3);
         })
     }
 
@@ -310,6 +316,7 @@
             .append("path").datum(data)
             .attr("fill", "none")
             .attr("stroke", color)
+            .attr("class", "line")
             .attr("stroke-width", 1.5)
             .attr("d", d3.line().x(function(d) {return xs(d.date);})
                 .y(function (d) {return ys(d.missionAve);})
@@ -341,22 +348,19 @@
     }
 
     function Moderate_Line(event, level){
-        d3.select("svg").html = "";
+        d3.select("moderate-line").html = "";
 
-        d3.select("svg").append("g").attr("transform", "translate("+margins.left +","+ margins.top + ")")
+        d3.select("svg").append("g")
+            .attr("id", "moderate-line")
+            .attr("transform", "translate("+margins.left +","+ margins.top + ")")
             .append("line")
             .attr("fill", "none")
             .attr("stroke", "orange")
             .attr("stroke-width", 1.5)
-            .attr("x1", window.margins.left)
+            .attr("x1", 0)
             .attr("x2", window.width)
             .attr("y1", window.ys(level))
             .attr("y2", window.ys(level))
-
-        missionLine(window.dayAverage, "gray")
-        weatherLine(window.dayAverage, "gray")
-        overallLine(window.dayAverage, "gray")
-        humanLine(window.dayAverage, "gray")
     }
 
     function High_Line(event, level) {
@@ -366,13 +370,11 @@
             .attr("fill", "none")
             .attr("stroke", "red")
             .attr("stroke-width", 1.5)
-            .attr("x1", window.margins.left)
+            .attr("x1", 0)
             .attr("x2", window.width)
             .attr("y1", window.ys(level))
             .attr("y2", window.ys(level))
     }
-
-
 </script>
 
 </body>
