@@ -40,7 +40,7 @@
 <div><p> </p></div>
 
 <div><svg>
-</svg></div>
+</svg><p id="averageValues">Mouse over to see the average on a Day.</p></div>
 
 <div style="margin:0 auto;width:50%;">
 
@@ -136,7 +136,7 @@
         missionLine(window.dayAverage, "green");
         //weatherLine(window.dayAverage, "yellow");
         //humanLine(window.dayAverage, "red");
-
+        legend()
 
         createToolTip("black", "black")
     }
@@ -253,10 +253,7 @@
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
-            return 'Overall_Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
-                'Mission Average: ' + roundNumber(data.missionAve, 3) + '<br>' +
-                'Weather Average: ' + roundNumber(data.weatherAve, 3) + '<br>' +
-                'Human Factors Average: ' + roundNumber(data.humanAve, 3);
+            return 'Mission Average: ' + roundNumber(data.missionAve, 3)
         })
     }
 
@@ -374,6 +371,15 @@
             .attr("x2", window.width)
             .attr("y1", window.ys(level))
             .attr("y2", window.ys(level))
+    }
+
+    function legend(){
+        svg = d3.select("svg").append("g")
+            .attr("transform", "translate(" + (window.width - margins.right) + "," + (margins.top + 10) + ")")
+            .attr("id", "legend")
+
+        svg.append("circle").attr("cx",0).attr("cy",0).attr("r", 6).style("fill", "green")
+        svg.append("text").attr("x", 20).attr("y", 0).text("Mission Average").style("font-size", "15px").attr("alignment-baseline","middle")
     }
 </script>
 

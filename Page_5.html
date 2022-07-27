@@ -45,7 +45,7 @@
 </svg><p id="averageValues">Mouse over to see the average on a Day.</p></div>
 <div style="margin:0 auto;width:50%;">
 
-    <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, window.moderateLevel)">Moderate Line</button>
+    <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, window.ModerateLevel)">Moderate Line</button>
 
     <button type="button" class="button" id="High" onclick="High_Line(event, window.HighLevel)">High Line</button>
 
@@ -134,9 +134,9 @@
         overallLine(window.dayAverage, "black");
         //plotHighLow(window.dayAverage, "lightgray");
         missionLine(window.dayAverage, "green");
-        weatherLine(window.dayAverage, "yellow");
-        humanLine(window.dayAverage, "red");
-
+        weatherLine(window.dayAverage, "blue");
+        humanLine(window.dayAverage, "#b5008b");
+        legend();
 
         createToolTip("black", "black")
     }
@@ -253,10 +253,10 @@
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
-            return 'Overall_Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
+            return 'Overall Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
                 'Mission Average: ' + roundNumber(data.missionAve, 3) + '<br>' +
                 'Weather Average: ' + roundNumber(data.weatherAve, 3) + '<br>' +
-                'Human Factors Average: ' + roundNumber(data.humanAve, 3);
+                'Human Average: ' + roundNumber(data.humanAve, 3);
         })
     }
 
@@ -374,6 +374,21 @@
             .attr("x2", window.width)
             .attr("y1", window.ys(level))
             .attr("y2", window.ys(level))
+    }
+
+    function legend(){
+        svg = d3.select("svg").append("g")
+            .attr("transform", "translate(" + (window.width - margins.right) + "," + (margins.top + 10) + ")")
+            .attr("id", "legend")
+
+        svg.append("circle").attr("cx",0).attr("cy",0).attr("r", 6).style("fill", "black")
+        svg.append("circle").attr("cx",0).attr("cy",30).attr("r", 6).style("fill", "green")
+        svg.append("circle").attr("cx",0).attr("cy",60).attr("r", 6).style("fill", "blue")
+        svg.append("circle").attr("cx",0).attr("cy",90).attr("r", 6).style("fill", "#b5008b")
+        svg.append("text").attr("x", 20).attr("y", 0).text("Overall Average").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("text").attr("x", 20).attr("y", 30).text("Mission Average").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("text").attr("x", 20).attr("y", 60).text("Weather Average").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("text").attr("x", 20).attr("y", 90).text("Human Average").style("font-size", "15px").attr("alignment-baseline","middle")
     }
 </script>
 

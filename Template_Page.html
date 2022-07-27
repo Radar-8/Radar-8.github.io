@@ -45,7 +45,7 @@
 </svg><p id="averageValues">Mouse over to see the average on a Day.</p></div>
 <div style="margin:0 auto;width:50%;">
 
-    <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, window.moderateLevel)">Moderate Line</button>
+    <button type="button" class="button" id="Moderate" onclick="Moderate_Line(event, window.ModerateLevel)">Moderate Line</button>
 
     <button type="button" class="button" id="High" onclick="High_Line(event, window.HighLevel)">High Line</button>
 
@@ -122,7 +122,7 @@
         window.xs = d3.scaleTime().domain(xdomain).range(xrange);
         window.ys = d3.scaleLinear().domain(ydomain).range(yrange);
         window.colors = d3.scaleOrdinal().domain(["overall", "mission", "weather", "human"]).range(["black", "lightblue", "yellow", "orange"])
-        //window.colorstest = d3.scaleThreshold().domain([0,5,10]).range(["#ccc", 'green', 'orange', 'red']);
+        window.colorstest = d3.scaleThreshold().domain([5,10]).range(['black', 'orange', 'red']);
         //set svg width and height
         d3.select('svg')
             .attr("width", width + margins.left + margins.right)
@@ -136,6 +136,7 @@
         //missionLine(window.dayAverage, "green");
         //weatherLine(window.dayAverage, "yellow");
         //humanLine(window.dayAverage, "red");
+        legend();
 
 
         createToolTip("black", "black")
@@ -375,6 +376,18 @@
             .attr("y1", window.ys(level))
             .attr("y2", window.ys(level))
     }
+
+    function legend(){
+        svg = d3.select("svg").append("g")
+            .attr("transform", "translate(" + (window.width - margins.right) + "," + margins.top + ")")
+            .attr("id", "legend")
+
+        svg.append("circle").attr("cx",0).attr("cy",0).attr("r", 6).style("fill", "green")
+        svg.append("circle").attr("cx",0).attr("cy",30).attr("r", 6).style("fill", "blue")
+        svg.append("text").attr("x", 20).attr("y", 0).text("variable A").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("text").attr("x", 20).attr("y", 30).text("variable B").style("font-size", "15px").attr("alignment-baseline","middle")
+    }
+
 </script>
 
 </body>
