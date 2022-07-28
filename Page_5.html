@@ -15,13 +15,12 @@
 </header>
 
 <p id="Body-Paragraph">
-    Before every flight, pilots use a form to assign numerical values for risk factors.
-    This risk factors range from the mission being flown (ie: students first flight), weather (ie: low cloud layers),
-    and human factors (ie: lack of sleep and ops tempo)
+    Now that we have explored all the components of the Risk Managment Decision Matrix, we can look at them all graphed
+    together over time.
 </p>
 
-<p id="Body-Paragraph2">The below chart is an aggregation of approximately 6 months of data from
-    November 2021 to July 2022</p>
+<p id="Body-Paragraph2">Expore and notice how the values change over time and each day. Note that the High and Low lines
+are for the Overall risk level for that particular day.</p>
 
 <div style="margin:0 auto;width:50%;">
 
@@ -253,7 +252,8 @@
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
-            return 'Overall Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
+            return 'Current Day: ' + data.date.toDateString() + '<br>' +
+                'Overall Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
                 'Mission Average: ' + roundNumber(data.missionAve, 3) + '<br>' +
                 'Weather Average: ' + roundNumber(data.weatherAve, 3) + '<br>' +
                 'Human Average: ' + roundNumber(data.humanAve, 3);

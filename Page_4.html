@@ -15,7 +15,10 @@
 </header>
 
 <p id="Body-Paragraph">
-    The most important is Human Factors
+    The last subcategory is Human factors. Human Factors include sleep, relative tiredness, consecutive work days, and
+    extended breaks from flying. <br> Notice in the chart below, the average change over time. While each day has some
+    changes, the average value fluctuates over time. There are periods of increasing and decreasing averages.
+    This causes the overall average to change over time.
 </p>
 
 <p id="Body-Paragraph2"></p>
@@ -252,7 +255,8 @@
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
-            return 'Human Average: ' + roundNumber(data.humanAve, 3);
+            return 'Current Day: ' + data.date.toDateString() + '<br>' +
+                'Human Average: ' + roundNumber(data.humanAve, 3);
         })
     }
 

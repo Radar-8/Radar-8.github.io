@@ -254,7 +254,8 @@
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
-            return 'Overall_Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
+            return 'Current Day: ' + data.date.toDateString() + '<br>' +
+                'Overall_Average: ' + roundNumber(data.overallAve, 3) + '<br>' +
                 'Mission Average: ' + roundNumber(data.missionAve, 3) + '<br>' +
                 'Weather Average: ' + roundNumber(data.weatherAve, 3) + '<br>' +
                 'Human Factors Average: ' + roundNumber(data.humanAve, 3);

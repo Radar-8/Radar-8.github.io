@@ -15,9 +15,10 @@
 </header>
 
 <p id="Body-Paragraph">
- The next is weather</p>
+ The next category to look at is weather</p>
 
-<p id="Body-Paragraph2"></p>
+<p id="Body-Paragraph2">The interesting point here is the large average value change between each day.
+This indicates the weather is a strong contributing factor to the day-to-day variance of the overall average.</p>
 
 <div style="margin:0 auto;width:50%;">
 
@@ -252,7 +253,8 @@
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
-            return 'Weather Average: ' + roundNumber(data.weatherAve, 3)
+            return 'Current Day: ' + data.date.toDateString() + '<br>' +
+                'Weather Average: ' + roundNumber(data.weatherAve, 3)
         })
     }
 

@@ -15,10 +15,13 @@
 </header>
 
 <p id="Body-Paragraph">
-    Now lets look at the first category of risk, the Mission.
+    Now lets look at the first category of risk, the mission factors.
 </p>
 
-<p id="Body-Paragraph2"></p>
+<p id="Body-Paragraph2">The mission category focuses on the type of flight being flown. This includes
+formation flights, checkrides (a form of flying exam), and going to unfamiliar airfields. As we look
+at the data below, we notice it is almost a horizonal line and has little variance over time. This indicates that
+the values are not driving factors.</p>
 
 <div style="margin:0 auto;width:50%;">
 
@@ -253,7 +256,8 @@
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
-            return 'Mission Average: ' + roundNumber(data.missionAve, 3)
+            return 'Current Day: ' + data.date.toDateString() + '<br>' +
+                'Mission Average: ' + roundNumber(data.missionAve, 3)
         })
     }
 

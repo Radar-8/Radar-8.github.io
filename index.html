@@ -17,11 +17,16 @@
 <p id="Body-Paragraph">
     Before every flight, pilots use a form to assign numerical values for risk factors.
     This risk factors range from the mission being flown (ie: students first flight), weather (ie: low cloud layers),
-    and human factors (ie: lack of sleep and ops tempo)
+    and human factors (ie: lack of sleep and ops tempo).<br>
+    The Moderate and High buttons below the chart show the risk acceptance authority based on the cumulative sum. Each
+    subcategory has there on thresholds as well. Use the buttons to see where the thresholds are in comparison to the averages.
+    <br> Additionally, the Day High/Low shows each days highest and lowest values in order to see how they compare to the average.
 </p>
 
 <p id="Body-Paragraph2">The below chart is an aggregation of approximately 6 months of data from
-    November 2021 to July 2022</p>
+    November 2021 to July 2022 <br> As we can see from the average trend line, the overall average stays relatively constant.
+    However, when we look at the underlining subcategories that make up the overall, we can see trends over time that can cause
+    organizational stress and risk during different periods.</p>
 
 <div style="margin:0 auto;width:50%;">
 
@@ -254,7 +259,8 @@
         }
         d3.select("#averageValues").html(roundNumber(data.overallAve, 3));
         d3.select("#averageValues").html(function(){
-            return 'Overall Average: ' + roundNumber(data.overallAve, 3);
+            return 'Current Day: ' + data.date.toDateString() + '<br>' +
+            'Overall Average: ' + roundNumber(data.overallAve, 3);
         })
     }
 
