@@ -137,6 +137,7 @@ This indicates the weather is a strong contributing factor to the day-to-day var
         weatherLine(window.dayAverage, "blue");
         //humanLine(window.dayAverage, "red");
         legend()
+        annotation()
 
         createToolTip("black", "black")
     }
@@ -374,10 +375,20 @@ This indicates the weather is a strong contributing factor to the day-to-day var
             .attr("y2", window.ys(level))
     }
 
+    function annotation(){
+        svg = d3.select("svg").append("g")
+            .attr("transform", "translate(" + (250) + "," + (100) + ")")
+            .attr("id", "legend")
+
+        svg.append("text").attr("x", 0).attr("y", 0).text("sinusoidal movements").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("line").attr("x1", 40).attr("y1", 10).attr("x2", 30).attr("y2", 150)
+            .style("stroke", "black")
+    }
+
     function legend(){
         svg = d3.select("svg").append("g")
             .attr("transform", "translate(" + (window.width - margins.right) + "," + (margins.top + 10) + ")")
-            .attr("id", "legend")
+            .attr("id", "annotations")
 
         svg.append("circle").attr("cx",0).attr("cy",0).attr("r", 6).style("fill", "blue")
         svg.append("text").attr("x", 20).attr("y", 0).text("Weather Factors").style("font-size", "15px").attr("alignment-baseline","middle")
